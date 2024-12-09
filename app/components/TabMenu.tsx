@@ -63,7 +63,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">국회의원 지역별 조회</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">"절대 잊어서는 안 될 내란의 공범"이라며 국민의힘 의원 105명 명단</h1>
         
         <Tab.Group selectedIndex={selectedRegion} onChange={setSelectedRegion}>
           <Tab.List className="flex flex-wrap space-x-2 rounded-xl bg-white p-1 shadow">
