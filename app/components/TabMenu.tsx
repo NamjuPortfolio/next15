@@ -33,6 +33,7 @@ const MemberCard = ({ member }: { member: AssemblyMember }) => (
 
 export default function TabMenu({ initialData }: TabMenuProps) {
   const [selectedRegion, setSelectedRegion] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // 제외할 의원 목록
   const excludedMembers = ['김예지', '안철수', '김상욱'];
@@ -53,11 +54,26 @@ export default function TabMenu({ initialData }: TabMenuProps) {
   )].filter(region => region !== '비례대표');
   regions.push('비례대표');
 
-  // 선택된 지역에 따라 데이터 필터링
+  // 선택된 지역과 검색어에 따라 데이터 필터링
   const getFilteredData = (region: string) => {
-    if (region === '전체') return filteredInitialData;
-    if (region === '비례대표') return filteredInitialData.filter(member => member.origNm === '비례대표');
-    return filteredInitialData.filter(member => member.origNm?.startsWith(region));
+    let filtered = filteredInitialData;
+    
+    if (region !== '전체') {
+      if (region === '비례대표') {
+        filtered = filtered.filter(member => member.origNm === '비례대표');
+      } else {
+        filtered = filtered.filter(member => member.origNm?.startsWith(region));
+      }
+    }
+
+    if (searchTerm) {
+      filtered = filtered.filter(member => 
+        member.empNm.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        member.origNm.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    return filtered;
   };
 
   return (
@@ -65,6 +81,16 @@ export default function TabMenu({ initialData }: TabMenuProps) {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8"><span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단</h1>
         
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="이름 또는 지역으로 검색"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-md mx-auto block px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
         <Tab.Group selectedIndex={selectedRegion} onChange={setSelectedRegion}>
           <Tab.List className="flex flex-wrap space-x-2 rounded-xl bg-white p-1 shadow">
             {regions.map((region) => (
@@ -79,7 +105,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
                 }
               >
                 {region === '전체' 
-                  ? `전체 (${filteredInitialData.length})`
+                  ? `전체 (${getFilteredData(region).length})`
                   : `${region} (${getFilteredData(region).length})`
                 }
               </Tab>
