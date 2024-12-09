@@ -23,7 +23,7 @@ const MemberCard = ({ member }: { member: AssemblyMember }) => (
     <div className="flex flex-row items-center gap-4">
       <Image src={`/assembly/${member.deptCd}.${member.imgType || 'jpg'}`} alt={member.empNm} width={100} height={100} />
       <div className="flex flex-col">
-        <p className="font-medium text-lg">{member.empNm}</p>
+        <p className="font-medium text-lg text-black">{member.empNm}</p>
         <p className="text-gray-600">{member.origNm}</p>
         <p className="text-gray-500">{member.reeleGbnNm}</p>
       </div>
