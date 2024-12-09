@@ -79,7 +79,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8"><span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단</h1>
+        <h1 className="text-3xl font-bold text-center mb-8 text-black"><span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단</h1>
         
         <div className="mb-6">
           <input
