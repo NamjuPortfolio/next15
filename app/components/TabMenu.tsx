@@ -23,7 +23,7 @@ const MemberCard = ({ member }: { member: AssemblyMember }) => (
     <div className="flex flex-row items-center gap-4">
       <Image src={`/assembly/${member.deptCd}.${member.imgType || 'jpg'}`} alt={member.empNm} width={100} height={100} />
       <div className="flex flex-col">
-        <p className="font-medium text-lg text-black">{member.empNm}</p>
+        <p className="font-medium text-3xl text-black">{member.empNm}</p>
         <p className="text-gray-600">{member.origNm}</p>
         <p className="text-gray-500">{member.reeleGbnNm}</p>
       </div>
@@ -34,6 +34,8 @@ const MemberCard = ({ member }: { member: AssemblyMember }) => (
 export default function TabMenu({ initialData }: TabMenuProps) {
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'term' | 'region'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // 제외할 의원 목록
   const excludedMembers = ['김예지', '안철수', '김상욱'];
@@ -73,7 +75,34 @@ export default function TabMenu({ initialData }: TabMenuProps) {
       );
     }
 
-    return filtered;
+    // 정렬 로직 적용
+    return filtered.sort((a, b) => {
+      let comparison = 0;
+      switch (sortBy) {
+        case 'name':
+          comparison = a.empNm.localeCompare(b.empNm);
+          break;
+        case 'term':
+          // 선수 정렬 로직 변경
+          const getTermOrder = (term: string) => {
+            if (term.includes('초선')) return 1;
+            if (term.includes('재선')) return 2;
+            if (term.includes('비례')) return 10;
+            const num = parseInt(term.match(/\d+/)?.[0] || '0');
+            return num > 0 ? num + 2 : 11;
+          };
+          comparison = getTermOrder(a.reeleGbnNm) - getTermOrder(b.reeleGbnNm);
+          break;
+        case 'region':
+          comparison = a.origNm.localeCompare(b.origNm);
+          break;
+      }
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+  };
+
+  const toggleSortOrder = () => {
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
   };
 
   return (
@@ -81,14 +110,40 @@ export default function TabMenu({ initialData }: TabMenuProps) {
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8 text-black"><span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단</h1>
         
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center">
           <input
             type="text"
             placeholder="이름 또는 지역으로 검색"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-md mx-auto block px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSortBy('name')}
+              className={`px-4 py-2 rounded-lg ${sortBy === 'name' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+            >
+              이름순
+            </button>
+            <button
+              onClick={() => setSortBy('term')}
+              className={`px-4 py-2 rounded-lg ${sortBy === 'term' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+            >
+              선수순
+            </button>
+            <button
+              onClick={() => setSortBy('region')}
+              className={`px-4 py-2 rounded-lg ${sortBy === 'region' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+            >
+              지역순
+            </button>
+            <button
+              onClick={toggleSortOrder}
+              className="px-4 py-2 rounded-lg bg-white text-gray-700"
+            >
+              {sortOrder === 'asc' ? '오름차순' : '내림차순'}
+            </button>
+          </div>
         </div>
 
         <Tab.Group selectedIndex={selectedRegion} onChange={setSelectedRegion}>
