@@ -51,66 +51,84 @@ const MemberCard = ({ member, onDetailClick }: { member: AssemblyMember; onDetai
   </div>
 );
 
-const DetailModal = ({ isOpen, onClose, detailInfo, member }: { isOpen: boolean; onClose: () => void; detailInfo: DetailInfo | null; member?: AssemblyMember }) => {
-  if (!isOpen || !detailInfo) return null;
+const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpen: boolean; onClose: () => void; detailInfo: DetailInfo | null; member?: AssemblyMember; isLoading: boolean }) => {
+  if (!isOpen) return null;
+
+  const Skeleton = () => (
+    <div className="animate-pulse">
+      <div className="h-[300px] bg-gray-200 rounded-lg mb-4"></div>
+      <div className="space-y-4">
+        {[...Array(9)].map((_, i) => (
+          <div key={i} className="border-b py-2">
+            <div className="h-4 bg-gray-200 rounded w-24"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4 mt-2"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg max-h-[80vh] overflow-y-auto w-full max-w-2xl mx-4">
-        <div className="flex flex-col gap-6">
-          {member && (
-            <div className="flex-shrink-0 w-full sm:w-auto flex justify-center">
-              <Image 
-                src={`/assembly/${member.deptCd}.${member.imgType || 'jpg'}`} 
-                alt={member.empNm} 
-                width={100} 
-                height={100}
-                className="rounded-lg"
-                style={{ width: '300px', height: 'auto ' }}  />
-            </div>
-          )}
-          <div className="flex-grow">
-            <h2 className="text-2xl font-bold mb-4 text-center sm:text-left">의원 상세정보</h2>
-            <div className="grid grid-cols-1 gap-2">
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">이메일:</span>
-                <span className="break-all">{detailInfo.assemEmail || '-'}</span>
+        {isLoading ? (
+          <Skeleton />
+        ) : (
+          <div className="flex flex-col gap-6">
+            {member && (
+              <div className="flex-shrink-0 w-full sm:w-auto flex justify-center">
+                <Image 
+                  src={`/assembly/${member.deptCd}.${member.imgType || 'jpg'}`} 
+                  alt={member.empNm} 
+                  width={100} 
+                  height={100}
+                  className="rounded-lg"
+                  style={{ width: '300px', height: 'auto ' }}  />
               </div>
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">소속위원회:</span>
-                <span>{detailInfo.shrtNm || '-'}</span>
-              </div>
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">홈페이지:</span>
-                <span className="break-all">{detailInfo.assemHomep || '-'}</span>
-              </div>
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">전화번호:</span>
-                <span>{detailInfo.assemTel || '-'}</span>
-              </div>
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">생년월일:</span>
-                <span>{detailInfo.bthDate || '-'}</span>
-              </div>
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">정당:</span>
-                <span>{detailInfo.polyNm || '-'}</span>
-              </div>
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">보좌관:</span>
-                <span>{detailInfo.staff || '-'}</span>
-              </div>
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">비서관:</span>
-                <span>{detailInfo.secretary || '-'}</span>
-              </div>
-              <div className="border-b py-2">
-                <span className="font-bold w-24 inline-block">약력:</span>
-                <pre className="whitespace-pre-wrap">{detailInfo.memTitle || '-'}</pre>
+            )}
+            <div className="flex-grow">
+              <h2 className="text-2xl font-bold mb-4 text-center sm:text-left">의원 상세정보</h2>
+              <div className="grid grid-cols-1 gap-2">
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">이메일:</span>
+                  <span className="break-all">{detailInfo?.assemEmail || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">소속위원회:</span>
+                  <span>{detailInfo?.shrtNm || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">홈페이지:</span>
+                  <span className="break-all">{detailInfo?.assemHomep || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">전화번호:</span>
+                  <span>{detailInfo?.assemTel || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">생년월일:</span>
+                  <span>{detailInfo?.bthDate || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">정당:</span>
+                  <span>{detailInfo?.polyNm || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">보좌관:</span>
+                  <span>{detailInfo?.staff || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">비서관:</span>
+                  <span>{detailInfo?.secretary || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">약력:</span>
+                  <pre className="whitespace-pre-wrap">{detailInfo?.memTitle || '-'}</pre>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="mt-6 text-center">
           <button 
             onClick={onClose}
@@ -132,20 +150,21 @@ export default function TabMenu({ initialData }: TabMenuProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [detailInfo, setDetailInfo] = useState<DetailInfo | null>(null);
   const [selectedMember, setSelectedMember] = useState<AssemblyMember | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDetailClick = async (deptCd: string, numKey: string) => {
     try {
       const member = initialData.find(m => m.deptCd === deptCd);
       setSelectedMember(member || null);
+      setIsModalOpen(true);
+      setIsLoading(true);
       
-      const response = await fetch(
-        `https://apis.data.go.kr/9710000/NationalAssemblyInfoService/getMemberDetailInfoList?serviceKey=${process.env.NEXT_PUBLIC_SERVICE_KEY}&numOfRows=10&pageNo=1&dept_cd=${deptCd}&num=${numKey}`
-      );
-      const xmlText = await response.text();
+      const response = await fetch(`/api/member-detail?deptCd=${deptCd}&numKey=${numKey}`);
+      const { xmlText } = await response.json();
+      
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlText, "text/xml");
       
-      // XML을 JSON으로 변환하는 함수
       const xmlToJson = (xml: Document) => {
         const item = xml.querySelector("item");
         if (!item) return null;
@@ -166,10 +185,11 @@ export default function TabMenu({ initialData }: TabMenuProps) {
       const data = xmlToJson(xmlDoc);
       if (data) {
         setDetailInfo(data);
-        setIsModalOpen(true);
       }
     } catch (error) {
       console.error('Error fetching detail info:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -326,6 +346,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
         onClose={() => setIsModalOpen(false)}
         detailInfo={detailInfo}
         member={selectedMember || undefined}
+        isLoading={isLoading}
       />
     </div>
   );
