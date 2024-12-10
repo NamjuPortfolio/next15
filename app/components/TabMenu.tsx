@@ -11,6 +11,14 @@ interface AssemblyMember {
   engNm: string;
   hjNm: string;
   jpgLink: string;
+  address: string;
+  sns: {
+    blog: string;
+    youtube: string;
+    facebook: string;
+    instagram: string;
+    channel: string;
+  };
   origNm: string;
   reeleGbnNm: string;
   electionNum?: string;
@@ -79,10 +87,10 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
       <div className={`p-6 rounded-lg max-h-[80vh] overflow-y-auto w-full max-w-2xl mx-4 ${
         isDarkMode ? 'bg-gray-800' : 'bg-white'
-      }`}>
+      }`} onClick={e => e.stopPropagation()}>
         {isLoading ? (
           <Skeleton />
         ) : (
@@ -111,6 +119,26 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
               <div className="grid grid-cols-1 gap-2">
                 {Object.entries({
                   '이름:': `${member?.empNm || '-'} (${member?.engNm || '-'}) / ${member?.hjNm || '-'}`,
+                  '주소:': (member?.address ? member.address + ' (우) 07233' : '-'),
+                  'SNS:': member?.sns ? (
+                    <div className="inline-flex gap-2">
+                      {member.sns.blog && (
+                        <Link href={member.sns.blog} target="_blank" className="text-blue-500 hover:underline">블로그</Link>
+                      )}
+                      {member.sns.youtube && (
+                        <Link href={member.sns.youtube} target="_blank" className="text-red-500 hover:underline">유튜브</Link>
+                      )}
+                      {member.sns.facebook && (
+                        <Link href={member.sns.facebook} target="_blank" className="text-blue-600 hover:underline">페이스북</Link>
+                      )}
+                      {member.sns.instagram && (
+                        <Link href={member.sns.instagram} target="_blank" className="text-pink-500 hover:underline">인스타그램</Link>
+                      )}
+                      {member.sns.channel && (
+                        <Link href={member.sns.channel} target="_blank" className="text-yellow-500 hover:underline">카카오채널</Link>
+                      )}
+                    </div>
+                  ) : '-',
                   '당선이력:': `${detailInfo?.reeleGbnNm || '-'} (${detailInfo?.electionNum})`,
                   '당선구:': detailInfo?.origNm || '-',
                   '이메일:': detailInfo?.assemEmail || '-',
