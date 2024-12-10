@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 export const useWebSocket = (url: string) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<unknown>(null);
 
   useEffect(() => {
     const ws = new WebSocket(url);
@@ -30,11 +30,11 @@ export const useWebSocket = (url: string) => {
     };
   }, [url]);
 
-  const sendMessage = (message: any) => {
+  const sendMessage = (message: unknown) => {
     if (socket && isConnected) {
       socket.send(JSON.stringify(message));
     }
   };
 
   return { isConnected, data, sendMessage };
-}; 
+};
