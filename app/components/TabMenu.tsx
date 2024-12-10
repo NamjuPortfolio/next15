@@ -121,7 +121,7 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
                     </div>
                   ) : '-',
                   '당선이력:': `${detailInfo?.reeleGbnNm || '-'} (${detailInfo?.electionNum})`,
-                  '당선:': detailInfo?.origNm || '-',
+                  '당선구:': detailInfo?.origNm || '-',
                   '이메일:': detailInfo?.assemEmail || '-',
                   '소속위원회:': detailInfo?.shrtNm || '-',
                   '홈페이지:': detailInfo?.assemHomep ? (
