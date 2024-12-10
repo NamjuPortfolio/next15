@@ -12,7 +12,7 @@ interface AssemblyMember {
   hjNm: string;
   jpgLink: string;
   address: string;
-  sns: {
+  sns?: {
     blog: string;
     youtube: string;
     facebook: string;
@@ -145,7 +145,7 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
                   '소속위원회:': detailInfo?.shrtNm || '-',
                   '홈페이지:': detailInfo?.assemHomep ? (
                     <Link href={detailInfo.assemHomep} target="_blank" className="text-blue-500 hover:underline">
-                      {detailInfo.assemHomep}
+                      홈페이지
                     </Link>
                   ) : '-',
                   '전화번호:': detailInfo?.assemTel || '-',
