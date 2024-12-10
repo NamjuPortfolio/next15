@@ -104,7 +104,7 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
                   'SNS:': member?.sns ? (
                     <div className="inline-flex gap-2">
                       {member.sns.blog && (
-                        <Link href={member.sns.blog} target="_blank" className="text-blue-500 hover:underline">블로그</Link>
+                        <Link href={member.sns.blog} target="_blank" className="text-green-500 hover:underline">블로그</Link>
                       )}
                       {member.sns.youtube && (
                         <Link href={member.sns.youtube} target="_blank" className="text-red-500 hover:underline">유튜브</Link>
@@ -116,7 +116,31 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
                         <Link href={member.sns.instagram} target="_blank" className="text-pink-500 hover:underline">인스타그램</Link>
                       )}
                       {member.sns.channel && (
-                        <Link href={member.sns.channel} target="_blank" className="text-yellow-500 hover:underline">카카오채널</Link>
+                        <Link 
+                          href={member.sns.channel} 
+                          target="_blank" 
+                          className={`${
+                            member.sns.channel.includes('band') 
+                              ? 'text-green-500'
+                              : member.sns.channel.includes('story')
+                                ? 'text-yellow-500'
+                                : member.sns.channel.includes('twitter')
+                                  ? 'text-blue-400'
+                                  : member.sns.channel.includes('naver')
+                                    ? 'text-green-600'
+                                    : 'text-yellow-500'
+                          } hover:underline`}
+                        >
+                          {member.sns.channel.includes('band')
+                            ? '밴드'
+                            : member.sns.channel.includes('story')
+                              ? '카카오스토리'
+                              : member.sns.channel.includes('twitter')
+                                ? '트위터'
+                                : member.sns.channel.includes('naver')
+                                  ? '네이버TV'
+                                  : '카카오채널'}
+                        </Link>
                       )}
                     </div>
                   ) : '-',
