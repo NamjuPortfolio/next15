@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tab } from '@headlessui/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -40,14 +40,16 @@ interface TabMenuProps {
   initialData: AssemblyMember[];
 }
 
-const MemberCard = ({ member, onDetailClick }: { member: AssemblyMember; onDetailClick: (deptCd: string) => void }) => (
-  <div className="p-4 border rounded-lg hover:shadow-lg transition-shadow bg-white">
+const MemberCard = ({ member, onDetailClick, isDarkMode }: { member: AssemblyMember; onDetailClick: (deptCd: string) => void; isDarkMode: boolean }) => (
+  <div className={`p-4 border rounded-lg hover:shadow-lg transition-shadow ${
+    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
+  }`}>
     <div className="flex flex-row items-center gap-4">
       <Image src={`/assembly/${member.deptCd}.${member.imgType || 'jpg'}`} alt={member.empNm} width={100} height={50} className="rounded-lg" style={{ width: '100px', height: 'auto' }}  />
       <div className="flex flex-col overflow-hidden w-full sm:w-auto text-center sm:text-left">
-        <p className="font-medium text-3xl text-black">{member.empNm}</p>
-        <p className="text-gray-600 truncate">{member.origNm}</p>
-        <p className="text-gray-500">{member.reeleGbnNm}</p>
+        <p className={`font-medium text-3xl ${isDarkMode ? 'text-white' : 'text-black'}`}>{member.empNm}</p>
+        <p className={`truncate ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{member.origNm}</p>
+        <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>{member.reeleGbnNm}</p>
         <button 
           onClick={() => onDetailClick(member.deptCd)}
           className="mt-2 px-4 py-2 bg-blue-500 w-24 mx-auto sm:mx-0 text-white rounded hover:bg-blue-600"
@@ -59,17 +61,17 @@ const MemberCard = ({ member, onDetailClick }: { member: AssemblyMember; onDetai
   </div>
 );
 
-const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpen: boolean; onClose: () => void; detailInfo: DetailInfo | null; member?: AssemblyMember; isLoading: boolean }) => {
+const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMode }: { isOpen: boolean; onClose: () => void; detailInfo: DetailInfo | null; member?: AssemblyMember; isLoading: boolean; isDarkMode: boolean }) => {
   if (!isOpen) return null;
 
   const Skeleton = () => (
     <div className="animate-pulse">
-      <div className="w-[283px] h-[397px] mx-auto bg-gray-200 rounded-lg mb-4"></div>
+      <div className={`w-[283px] h-[397px] mx-auto rounded-lg mb-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
       <div className="space-y-4">
         {[...Array(9)].map((_, i) => (
           <div key={i} className="border-b py-2">
-            <div className="h-4 bg-gray-200 rounded w-24"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4 mt-2"></div>
+            <div className={`h-4 rounded w-24 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+            <div className={`h-4 rounded w-3/4 mt-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
           </div>
         ))}
       </div>
@@ -78,7 +80,9 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpe
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-h-[80vh] overflow-y-auto w-full max-w-2xl mx-4">
+      <div className={`p-6 rounded-lg max-h-[80vh] overflow-y-auto w-full max-w-2xl mx-4 ${
+        isDarkMode ? 'bg-gray-800' : 'bg-white'
+      }`}>
         {isLoading ? (
           <Skeleton />
         ) : (
@@ -86,7 +90,7 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpe
             {member && (
               <div className="flex-shrink-0 w-full sm:w-auto flex justify-center">
                 <div className="relative mx-auto w-[283px] h-[397px]">
-                  <div className="absolute inset-0 bg-gray-200 rounded-lg animate-pulse" />
+                  <div className={`absolute inset-0 rounded-lg animate-pulse ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
                   <Image 
                     src={`/assembly_high/${member.deptCd}.${member.imgType || 'jpg'}`}
                     alt={member.empNm}
@@ -103,56 +107,27 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpe
               </div>
             )}
             <div className="flex-grow">
-              <h2 className="text-2xl font-bold mb-4 text-center sm:text-left">의원 상세정보</h2>
+              <h2 className={`text-2xl font-bold mb-4 text-center sm:text-left ${isDarkMode ? 'text-white' : 'text-black'}`}>의원 상세정보</h2>
               <div className="grid grid-cols-1 gap-2">
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">이름:</span>
-                  <span>{member?.empNm || '-'} ({member?.engNm || '-'}) / {member?.hjNm || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">당선이력:</span>
-                  <span>{detailInfo?.reeleGbnNm || '-'} ({detailInfo?.electionNum})</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">당선구:</span>
-                  <span>{detailInfo?.origNm || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">이메일:</span>
-                  <span className="break-all">{detailInfo?.assemEmail || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">소속위원회:</span>
-                  <span>{detailInfo?.shrtNm || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">홈페이지:</span>
-                  <span className="break-all">{detailInfo?.assemHomep || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">전화번호:</span>
-                  <span>{detailInfo?.assemTel || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">생년월일:</span>
-                  <span>{detailInfo?.bthDate ? `${detailInfo.bthDate.substring(2,4)}년${detailInfo.bthDate.substring(4,6)}월${detailInfo.bthDate.substring(6,8)}일` : '-'}{detailInfo?.bthDate ? `(만 ${new Date().getFullYear() - parseInt(detailInfo.bthDate.substring(0,4))}세)` : ''}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">정당:</span>
-                  <span>{detailInfo?.polyNm || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">보좌관:</span>
-                  <span>{detailInfo?.staff || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">비서관:</span>
-                  <span>{detailInfo?.secretary || '-'}</span>
-                </div>
-                <div className="border-b py-2">
-                  <span className="font-bold w-24 inline-block">약력:</span>
-                  <pre className="whitespace-pre-wrap">{detailInfo?.memTitle || '-'}</pre>
-                </div>
+                {Object.entries({
+                  '이름:': `${member?.empNm || '-'} (${member?.engNm || '-'}) / ${member?.hjNm || '-'}`,
+                  '당선이력:': `${detailInfo?.reeleGbnNm || '-'} (${detailInfo?.electionNum})`,
+                  '당선구:': detailInfo?.origNm || '-',
+                  '이메일:': detailInfo?.assemEmail || '-',
+                  '소속위원회:': detailInfo?.shrtNm || '-',
+                  '홈페이지:': detailInfo?.assemHomep || '-',
+                  '전화번호:': detailInfo?.assemTel || '-',
+                  '생년월일:': detailInfo?.bthDate ? `${detailInfo.bthDate.substring(2,4)}년${detailInfo.bthDate.substring(4,6)}월${detailInfo.bthDate.substring(6,8)}일${detailInfo.bthDate ? `(만 ${new Date().getFullYear() - parseInt(detailInfo.bthDate.substring(0,4))}세)` : ''}` : '-',
+                  '정당:': detailInfo?.polyNm || '-',
+                  '보좌관:': detailInfo?.staff || '-',
+                  '비서관:': detailInfo?.secretary || '-',
+                  '약력:': detailInfo?.memTitle || '-'
+                }).map(([label, value]) => (
+                  <div key={label} className={`border-b py-2 ${isDarkMode ? 'border-gray-700' : ''}`}>
+                    <span className={`font-bold w-24 inline-block ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>{label}</span>
+                    <span className={isDarkMode ? 'text-gray-300' : 'text-black'}>{value}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -179,6 +154,20 @@ export default function TabMenu({ initialData }: TabMenuProps) {
   const [detailInfo, setDetailInfo] = useState<DetailInfo | null>(null);
   const [selectedMember, setSelectedMember] = useState<AssemblyMember | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode !== null) {
+      setIsDarkMode(JSON.parse(savedDarkMode));
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    localStorage.setItem('darkMode', JSON.stringify(newDarkMode));
+  };
 
   const handleDetailClick = async (deptCd: string, numKey: string) => {
     try {
@@ -295,11 +284,21 @@ export default function TabMenu({ initialData }: TabMenuProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className={`min-h-screen py-8 px-4 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
       <div className="max-w-7xl mx-auto px-2">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-8 text-black"><span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단</h1>
+        <button
+          onClick={toggleDarkMode}
+          className={`fixed bottom-4 right-4 p-3 rounded-full shadow-lg ${
+            isDarkMode ? 'bg-yellow-400 text-gray-900' : 'bg-gray-800 text-yellow-400'
+          }`}
+        >
+          {isDarkMode ? '🌞' : '🌙'}
+        </button>
+        <h1 className={`text-2xl sm:text-3xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-black'}`}>
+          <span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단
+        </h1>
         <div className="text-gray-500 text-sm mb-4">
-          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/288008C178403F22E064B49691C6967B" target="_blank" className="text-blue-500 hover:underline">헌법과 법률을 유린한 국민의힘 정당 해산에 관한 청원</Link>
+          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/288008C178403F22E064B49691C6967B" target="_blank" className="text-blue-500 hover:underline">헌법과 법률을 유린한 국민의힘 정당 해산에 관한 ���원</Link>
           <br/>
           <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/27F6E510218D1216E064B49691C6967B" target="_blank" className="text-blue-500 hover:underline">대통령 윤석열 탄핵소추와 내란죄 수사를 위한 특검법 제정 촉구에 관한 청원</Link>
         </div>
@@ -340,7 +339,9 @@ export default function TabMenu({ initialData }: TabMenuProps) {
         </div>
 
         <Tab.Group selectedIndex={selectedRegion} onChange={setSelectedRegion}>
-          <Tab.List className="flex flex-wrap gap-2 rounded-xl bg-white p-2 shadow overflow-x-auto max-h-[200px] sm:max-h-none">
+          <Tab.List className={`flex flex-wrap gap-2 rounded-xl p-2 shadow overflow-x-auto max-h-[200px] sm:max-h-none ${
+            isDarkMode ? 'bg-gray-800' : 'bg-white'
+          }`}>
             {regions.map((region) => (
               <Tab
                 key={region}
@@ -348,7 +349,9 @@ export default function TabMenu({ initialData }: TabMenuProps) {
                   `rounded-lg py-1.5 sm:py-2.5 text-sm font-medium leading-5 px-3 sm:px-4 whitespace-nowrap min-w-[100px] text-center
                   ${selected
                     ? 'bg-blue-500 text-white shadow'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : isDarkMode 
+                      ? 'text-gray-300 hover:bg-gray-700' 
+                      : 'text-gray-700 hover:bg-gray-100'
                   }`
                 }
               >
@@ -371,6 +374,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
                       key={index} 
                       member={member} 
                       onDetailClick={() => handleDetailClick(member.deptCd, member.numKey)}
+                      isDarkMode={isDarkMode}
                     />
                   ))}
                 </div>
@@ -385,6 +389,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
         detailInfo={detailInfo}
         member={selectedMember || undefined}
         isLoading={isLoading}
+        isDarkMode={isDarkMode}
       />
     </div>
   );
