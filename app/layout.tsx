@@ -14,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "갑진 105적",
-  description: "갑진 105적",
+  title: "잊지말자 :: 갑진 105적",
+  description: "갑진 105적 : 절대 잊어서는 안 될 내란의 공범 국민의 힘 의원 105명 명단",
 };
 
 export default function RootLayout({
