@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { MemberCard } from './MemberCard';
+import CountUp from 'react-countup';
 
 interface PetitionStatus {
   status: number;
@@ -131,7 +132,7 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
                     </div>
                   ) : '-',
                   '당선이력:': `${detailInfo?.reeleGbnNm || '-'} (${detailInfo?.electionNum})`,
-                  '당선구:': detailInfo?.origNm || '-',
+                  '당선���:': detailInfo?.origNm || '-',
                   '이메일:': detailInfo?.assemEmail || '-',
                   '소속위원회:': detailInfo?.shrtNm || '-',
                   '홈페이지:': detailInfo?.assemHomep ? (
@@ -169,6 +170,13 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
 };
 
 export default function TabMenu({ initialData }: TabMenuProps) {
+  // 제외할 의원 목록
+  const excludedMembers = ['김예지', '안철수', '김상욱'];
+  
+  // 제외 의원을 필터링한 데이터 - 먼저 선언
+  const filteredInitialData = initialData.filter(member => !excludedMembers.includes(member.empNm));
+
+  // 상태 선언
   const [selectedRegion, setSelectedRegion] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'term' | 'region'>('name');
@@ -178,6 +186,9 @@ export default function TabMenu({ initialData }: TabMenuProps) {
   const [selectedMember, setSelectedMember] = useState<AssemblyMember | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [data, setData] = useState(filteredInitialData);
+  const [isShuffled, setIsShuffled] = useState(false);
+  
 
   const { isConnected, data: wsData, sendMessage } = useWebSocket('wss://kick-yoon.com/websocket');
 
@@ -198,11 +209,17 @@ export default function TabMenu({ initialData }: TabMenuProps) {
 
   useEffect(() => {
     if (wsData) {
-      // 웹소켓으로 받은 데이터 처리
-      console.log('Received WebSocket data:', wsData);
-      // 필요한 경우 상태 업데이트
+
     }
   }, [wsData]);
+
+  // useEffect(() => {
+  //   if (wsData) {
+  //     // 웹소켓으로 받은 데이터 처리
+  //     console.log('Received WebSocket data:', wsData);
+  //     // 필요한 경우 상태 업데이트
+  //   }
+  // }, [wsData]);
 
   const toggleDarkMode = () => {
     const newDarkMode = !isDarkMode;
@@ -257,12 +274,6 @@ export default function TabMenu({ initialData }: TabMenuProps) {
     }
   };
 
-  // 제외할 의원 목록
-  const excludedMembers = ['김예지', '안철수', '김상욱'];
-  
-  // 제외 의원을 필터링한 데이터
-  const filteredInitialData = initialData.filter(member => !excludedMembers.includes(member.empNm));
-
   // 지역 목록 생성 (전체 + 고유 지역 + 비례대표)
   const regions = ['전체', ...new Set(
     filteredInitialData
@@ -278,7 +289,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
 
   // 선택된 지역과 검색어에 따라 데이터 필터링
   const getFilteredData = (region: string) => {
-    let filtered = filteredInitialData;
+    let filtered = [...data]; // 현재 데이터 상태를 사용
     
     if (region !== '전체') {
       if (region === '비례대표') {
@@ -295,8 +306,17 @@ export default function TabMenu({ initialData }: TabMenuProps) {
       );
     }
 
-    // 정렬 로직 적용
-    return filtered.sort((a, b) => {
+    return filtered;
+  };
+
+  // 정렬 로직을 별도 함수로 분리
+  const getSortedData = (filtered: AssemblyMember[]) => {
+    // 랜덤 상태일 때는 정렬하지 않고 현재 데이터 그대로 반환
+    if (isShuffled) {
+      return filtered;
+    }
+
+    return [...filtered].sort((a, b) => {
       let comparison = 0;
       switch (sortBy) {
         case 'name':
@@ -324,6 +344,23 @@ export default function TabMenu({ initialData }: TabMenuProps) {
     setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
   };
 
+  // shuffleData 함수 수정
+  const shuffleData = () => {
+    const shuffled = [...data] // filteredInitialData 대신 현재 data 사용
+      .map(value => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value);
+    setData(shuffled);
+    setIsShuffled(true);
+  };
+
+  // 정렬 버튼 클릭 핸들러 수정
+  const handleSortClick = (newSortBy: 'name' | 'term' | 'region') => {
+    setSortBy(newSortBy);
+    setIsShuffled(false);
+    setData(filteredInitialData); // 정렬 버튼 클릭시에만 초기 데이터로 복원
+  };
+
   return (
     <div className={`min-h-screen py-8 px-4 ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
       <div className="max-w-7xl mx-auto px-2">
@@ -340,19 +377,31 @@ export default function TabMenu({ initialData }: TabMenuProps) {
         </h1>
         <div className="flex flex-col gap-4 p-6 mb-6 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
           <div className="flex flex-col gap-2">
+         
             <Link 
               href="https://petitions.assembly.go.kr/proceed/onGoingAll/288008C178403F22E064B49691C6967B" 
               target="_blank" 
               className="text-lg font-medium text-red-600 hover:text-red-700 hover:underline transition-colors"
             >
-              📜 헌법과 법률을 유린한 국민의힘 정당 해산에 관한 청원
+              📜 헌법과 법률을 유린 국민의힘 정당 해산에 관한 청원
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              실시간 동의 <span className="font-bold text-red-500">{(wsData as WebSocketData)?.red?.status?.toLocaleString() ?? '0'}</span>명
+              실시간 동의 <span className="font-bold text-lg mr-1 text-red-500">
+                {wsData ? (
+                  <CountUp 
+                    end={(wsData as WebSocketData)?.red?.status || 0}
+                    separator=","
+                    duration={2}
+                    preserveValue={true}
+                    start={0}
+                  />
+                ) : '0'}
+              </span>명
               <span className="text-gray-500 ml-2">
                 ({new Date((wsData as WebSocketData)?.red?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
               </span>
             </p>
+          
           </div>
 
           <div className="flex flex-col gap-2">
@@ -364,12 +413,25 @@ export default function TabMenu({ initialData }: TabMenuProps) {
               ⚖️ 대통령 윤석열 탄핵소추와 내란죄 수사를 위한 특검법 제정 촉구에 관한 청원
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              실시간 동의 <span className="font-bold text-red-500">{(wsData as WebSocketData)?.yoon?.status?.toLocaleString() ?? '0'}</span>명
+              실시간 동의 <span className="font-bold text-lg mr-1 text-red-500">
+                {wsData ? (
+                  <CountUp 
+                    end={(wsData as WebSocketData)?.yoon?.status || 0}
+                    separator=","
+                    duration={2}
+                    preserveValue={true}
+                    start={0}
+                  />
+                ) : '0'}
+              </span>명
               <span className="text-gray-500 ml-2">
                 ({new Date((wsData as WebSocketData)?.yoon?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
               </span>
             </p>
           </div>
+          <p className="text-sm text-right text-gray-600 dark:text-gray-300">
+              자료 제공 <Link href="https://kick-yoon.com/" target="_blank" className="text-blue-500 hover:underline">https://kick-yoon.com/</Link>
+            </p>
         </div>
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center">
           <input
@@ -377,23 +439,25 @@ export default function TabMenu({ initialData }: TabMenuProps) {
             placeholder="이름 또는 지역으로 검색"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-5/12 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 dark:text-white"
+            className={`w-full sm:w-5/12 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent ${
+              isDarkMode ? 'bg-gray-800 text-white placeholder-gray-400' : 'bg-white text-gray-700'
+            }`}
           />
           <div className="flex flex-wrap gap-2 justify-center sm:justify-start w-full sm:w-auto">
             <button
-              onClick={() => setSortBy('name')}
+              onClick={() => handleSortClick('name')}
               className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'name' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'}`}
             >
               이름순
             </button>
             <button
-              onClick={() => setSortBy('term')}
+              onClick={() => handleSortClick('term')}
               className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'term' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'}`}
             >
               선수순
             </button>
             <button
-              onClick={() => setSortBy('region')}
+              onClick={() => handleSortClick('region')}
               className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'region' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'}`}
             >
               지역순
@@ -403,6 +467,13 @@ export default function TabMenu({ initialData }: TabMenuProps) {
               className="px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg bg-white text-gray-700"
             >
               {sortOrder === 'asc' ? '오름차순' : '내림차순'}
+            </button>
+            <button
+              onClick={shuffleData}
+              className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg bg-white text-gray-700
+              }`}
+            >
+              랜덤
             </button>
           </div>
         </div>
@@ -438,7 +509,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
                 className="rounded-xl bg-white/50 p-2 sm:p-4"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-                  {getFilteredData(region).map((member, index) => (
+                  {getSortedData(getFilteredData(region)).map((member, index) => (
                     <MemberCard 
                       key={index} 
                       member={member} 
@@ -460,11 +531,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
         isLoading={isLoading}
         isDarkMode={isDarkMode}
       />
-      <div className={`fixed top-4 right-4 px-4 py-2 rounded-full ${
-        isConnected ? 'bg-green-500' : 'bg-red-500'
-      } text-white`}>
-        {isConnected ? '연결됨' : '연결 중...'}
-      </div>
+
     </div>
   );
 }
