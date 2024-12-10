@@ -8,12 +8,6 @@ interface PetitionStatus {
   timestamp: string;
 }
 
-interface WebSocketData {
-  connectedusers: number;
-  yoon: PetitionStatus;
-  red: PetitionStatus;
-}
-
 interface PetitionStatusProps {
   isDarkMode: boolean;
 }
@@ -39,18 +33,18 @@ export default function PetitionStatus({ isDarkMode }: PetitionStatusProps) {
         </Link>
         <p className="text-sm text-gray-600 dark:text-gray-300">
           실시간 동의 <span className="font-bold text-lg mr-1 text-red-500">
-            {wsData ? (
+            {wsData && (
               <CountUp 
-                end={(wsData as WebSocketData)?.red?.status || 0}
+                end={wsData.red?.status || 0}
                 separator=","
                 duration={2}
                 preserveValue={true}
                 start={0}
               />
-            ) : '0'}
+            )}
           </span>명
           <span className="text-gray-500 ml-2">
-            ({new Date((wsData as WebSocketData)?.red?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
+            ({new Date(wsData?.red?.timestamp || Date.now()).toLocaleString('ko-KR')} 기준)
           </span>
         </p>
       </div>
@@ -65,18 +59,42 @@ export default function PetitionStatus({ isDarkMode }: PetitionStatusProps) {
         </Link>
         <p className="text-sm text-gray-600 dark:text-gray-300">
           실시간 동의 <span className="font-bold text-lg mr-1 text-red-500">
-            {wsData ? (
+            {wsData && (
               <CountUp 
-                end={(wsData as WebSocketData)?.yoon?.status || 0}
+                end={wsData.yoon?.status || 0}
                 separator=","
                 duration={2}
                 preserveValue={true}
                 start={0}
               />
-            ) : '0'}
+            )}
           </span>명
           <span className="text-gray-500 ml-2">
-            ({new Date((wsData as WebSocketData)?.yoon?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
+            ({new Date(wsData?.yoon?.timestamp || Date.now()).toLocaleString('ko-KR')} 기준)
+          </span>
+        </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-lg font-medium text-red-600 hover:text-red-700 hover:underline transition-colors">⏳ 대기 인원 표시</span>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          대기 인원 <span className="font-bold text-lg mr-1 text-red-500">
+            {wsData && (
+              <CountUp 
+                end={wsData?.WaitCount?.nwait || 0}
+                separator=","
+                duration={2}
+                preserveValue={true}
+                start={0}
+              />
+            )}
+          </span>명
+          <span className="text-gray-500 ml-2">
+            ({new Date(wsData?.WaitCount?.timestamp || Date.now()).toLocaleString('ko-KR')} 기준)
+          </span>
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          남은 시간 <span className="font-bold text-lg mr-1 text-red-500">
+            {Math.max(0, Math.floor((wsData?.WaitCount?.real_time_left || 0) / 60))}분 {Math.max(0, (wsData?.WaitCount?.real_time_left || 0) % 60)}초
           </span>
         </p>
       </div>

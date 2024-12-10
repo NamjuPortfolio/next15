@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react';
-interface PetitionStatus {
-  status: number;
-  timestamp: string;
-}
 
-interface WebSocketData {
+
+export interface WebSocketData {
   connectedusers: number;
-  yoon: PetitionStatus;
-  red: PetitionStatus;
+  red: {
+    status: number;
+    timestamp: string;
+  };
+  yoon: {
+    status: number;
+    timestamp: string;
+  };
+  WaitCount: {
+    nwait: number;
+    real_time_left: number;
+    timestamp: string;
+  };
 }
 export const useWebSocket = (url: string) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
