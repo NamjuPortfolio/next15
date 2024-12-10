@@ -158,7 +158,7 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
                   '정당:': detailInfo?.polyNm || '-',
                   '보좌관:': detailInfo?.staff || '-',
                   '비서관:': detailInfo?.secretary || '-',
-                  '약력:': detailInfo?.memTitle || '-'
+                  '약력:': detailInfo?.memTitle ? <pre className={isDarkMode ? 'text-gray-300' : 'text-black'}>{detailInfo.memTitle}</pre> : '-'
                 }).map(([label, value]) => (
                   <div key={label} className={`border-b py-2 ${isDarkMode ? 'border-gray-700' : ''}`}>
                     <span className={`font-bold w-24 inline-block ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>{label}</span>
