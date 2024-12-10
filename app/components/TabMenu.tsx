@@ -85,12 +85,14 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpe
             {member && (
               <div className="flex-shrink-0 w-full sm:w-auto flex justify-center">
                 <Image 
-                  src={`/assembly/${member.deptCd}.${member.imgType || 'jpg'}`} 
-                  alt={member.empNm} 
-                  width={100} 
-                  height={100}
-                  className="rounded-lg"
-                  style={{ width: '300px', height: 'auto ' }}  />
+                  src={`/assembly_high/${member.deptCd}.${member.imgType || 'jpg'}`}
+                  alt={member.empNm}
+                  width={283}
+                  height={397}
+                  className="rounded-lg object-cover"
+                  priority
+                  quality={100}
+                />
               </div>
             )}
             <div className="flex-grow">
