@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Tab } from '@headlessui/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useWebSocket } from '../hooks/useWebSocket';
+import { MemberCard } from './MemberCard';
 
 interface AssemblyMember {
   deptCd: string;
@@ -47,27 +49,6 @@ interface DetailInfo {
 interface TabMenuProps {
   initialData: AssemblyMember[];
 }
-
-const MemberCard = ({ member, onDetailClick, isDarkMode }: { member: AssemblyMember; onDetailClick: (deptCd: string) => void; isDarkMode: boolean }) => (
-  <div className={`p-4 border rounded-lg hover:shadow-lg transition-shadow ${
-    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
-  }`}>
-    <div className="flex flex-row items-center gap-4">
-      <Image src={`/assembly/${member.deptCd}.${member.imgType || 'jpg'}`} alt={member.empNm} width={100} height={50} className="rounded-lg" style={{ width: '100px', height: 'auto' }}  />
-      <div className="flex flex-col overflow-hidden w-full sm:w-auto text-center sm:text-left">
-        <p className={`font-medium text-3xl ${isDarkMode ? 'text-white' : 'text-black'}`}>{member.empNm}</p>
-        <p className={`truncate ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{member.origNm}</p>
-        <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>{member.reeleGbnNm}</p>
-        <button 
-          onClick={() => onDetailClick(member.deptCd)}
-          className="mt-2 px-4 py-2 bg-red-500 w-24 mx-auto sm:mx-0 text-white rounded hover:bg-red-600"
-        >
-          상세보기
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
 const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMode }: { isOpen: boolean; onClose: () => void; detailInfo: DetailInfo | null; member?: AssemblyMember; isLoading: boolean; isDarkMode: boolean }) => {
   if (!isOpen) return null;
@@ -188,12 +169,30 @@ export default function TabMenu({ initialData }: TabMenuProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  const { isConnected, data: wsData, sendMessage } = useWebSocket('wss://kick-yoon.com/websocket');
+
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('darkMode');
     if (savedDarkMode !== null) {
       setIsDarkMode(JSON.parse(savedDarkMode));
     }
   }, []);
+
+  useEffect(() => {
+    if (isConnected) {
+      // 연결되면 초기 데이터 요청
+      sendMessage({ type: 'GET_MEMBERS' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected]);
+
+  useEffect(() => {
+    if (wsData) {
+      // 웹소켓으로 받은 데이터 처리
+      console.log('Received WebSocket data:', wsData);
+      // 필요한 경우 상태 업데이트
+    }
+  }, [wsData]);
 
   const toggleDarkMode = () => {
     const newDarkMode = !isDarkMode;
@@ -329,10 +328,38 @@ export default function TabMenu({ initialData }: TabMenuProps) {
         <h1 className={`text-2xl sm:text-3xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-black'}`}>
           <span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단
         </h1>
-        <div className="text-gray-500 text-sm mb-4">
-          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/288008C178403F22E064B49691C6967B" target="_blank" className="text-red-500 hover:underline">헌법과 법률을 유린한 국민의힘 정당 해산에 관한 청원</Link>
-          <br/>
-          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/27F6E510218D1216E064B49691C6967B" target="_blank" className="text-red-500 hover:underline">대통령 윤석열 탄핵소추와 내란죄 수사를 위한 특검법 제정 촉구에 관한 청원</Link>
+        <div className="flex flex-col gap-4 p-6 mb-6 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col gap-2">
+            <Link 
+              href="https://petitions.assembly.go.kr/proceed/onGoingAll/288008C178403F22E064B49691C6967B" 
+              target="_blank" 
+              className="text-lg font-medium text-red-600 hover:text-red-700 hover:underline transition-colors"
+            >
+              📜 헌법과 법률을 유린한 국민의힘 정당 해산에 관한 청원
+            </Link>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              실시간 동의 <span className="font-bold text-red-500">{wsData?.red?.status?.toLocaleString() ?? '0'}</span>명
+              <span className="text-gray-500 ml-2">
+                ({new Date(wsData?.red?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
+              </span>
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Link 
+              href="https://petitions.assembly.go.kr/proceed/onGoingAll/27F6E510218D1216E064B49691C6967B" 
+              target="_blank"
+              className="text-lg font-medium text-red-600 hover:text-red-700 hover:underline transition-colors"
+            >
+              ⚖️ 대통령 윤석열 탄핵소추와 내란죄 수사를 위한 특검법 제정 촉구에 관한 청원
+            </Link>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              실시간 동의 <span className="font-bold text-red-500">{wsData?.yoon?.status?.toLocaleString() ?? '0'}</span>명
+              <span className="text-gray-500 ml-2">
+                ({new Date(wsData?.yoon?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
+              </span>
+            </p>
+          </div>
         </div>
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center">
           <input
@@ -423,6 +450,11 @@ export default function TabMenu({ initialData }: TabMenuProps) {
         isLoading={isLoading}
         isDarkMode={isDarkMode}
       />
+      <div className={`fixed top-4 right-4 px-4 py-2 rounded-full ${
+        isConnected ? 'bg-green-500' : 'bg-red-500'
+      } text-white`}>
+        {isConnected ? '연결됨' : '연결 중...'}
+      </div>
     </div>
   );
 }
