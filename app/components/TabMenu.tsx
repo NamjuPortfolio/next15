@@ -12,11 +12,18 @@ interface AssemblyMember {
   jpgLink: string;
   origNm: string;
   reeleGbnNm: string;
+  electionNum: string;
   numKey: string;
   imgType?: string;
 }
 
 interface DetailInfo {
+  empNm: string;
+  origNm: string;
+  engNm: string;
+  hjNm: string;
+  reeleGbnNm: string;
+  electionNum: string;
   memTitle: string;
   assemEmail: string;
   assemHomep: string;
@@ -90,6 +97,18 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpe
               <h2 className="text-2xl font-bold mb-4 text-center sm:text-left">의원 상세정보</h2>
               <div className="grid grid-cols-1 gap-2">
                 <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">이름:</span>
+                  <span>{member?.empNm || '-'} ({member?.engNm || '-'}) / {member?.hjNm || '-'}</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">당선이력:</span>
+                  <span>{detailInfo?.reeleGbnNm || '-'} ({detailInfo?.electionNum})</span>
+                </div>
+                <div className="border-b py-2">
+                  <span className="font-bold w-24 inline-block">당선구:</span>
+                  <span>{detailInfo?.origNm || '-'}</span>
+                </div>
+                <div className="border-b py-2">
                   <span className="font-bold w-24 inline-block">이메일:</span>
                   <span className="break-all">{detailInfo?.assemEmail || '-'}</span>
                 </div>
@@ -107,7 +126,7 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpe
                 </div>
                 <div className="border-b py-2">
                   <span className="font-bold w-24 inline-block">생년월일:</span>
-                  <span>{detailInfo?.bthDate || '-'}</span>
+                  <span>{detailInfo?.bthDate ? `${detailInfo.bthDate.substring(2,4)}년${detailInfo.bthDate.substring(4,6)}월${detailInfo.bthDate.substring(6,8)}일` : '-'}{detailInfo?.bthDate ? `(만 ${new Date().getFullYear() - parseInt(detailInfo.bthDate.substring(0,4))}세)` : ''}</span>
                 </div>
                 <div className="border-b py-2">
                   <span className="font-bold w-24 inline-block">정당:</span>
@@ -174,7 +193,13 @@ export default function TabMenu({ initialData }: TabMenuProps) {
           assemEmail: item.querySelector("assemEmail")?.textContent || "",
           assemHomep: item.querySelector("assemHomep")?.textContent || "",
           assemTel: item.querySelector("assemTel")?.textContent || "",
+          reeleGbnNm: item.querySelector("reeleGbnNm")?.textContent || "",
+          electionNum: item.querySelector("electionNum")?.textContent || "",
+          empNm: item.querySelector("empNm")?.textContent || "",
+          engNm: item.querySelector("engNm")?.textContent || "",
+          hjNm: item.querySelector("hjNm")?.textContent || "",
           bthDate: item.querySelector("bthDate")?.textContent || "",
+          origNm: item.querySelector("origNm")?.textContent || "",
           polyNm: item.querySelector("polyNm")?.textContent || "",
           shrtNm: item.querySelector("shrtNm")?.textContent || "",
           staff: item.querySelector("staff")?.textContent || "",
