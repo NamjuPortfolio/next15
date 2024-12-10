@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Tab } from '@headlessui/react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface AssemblyMember {
   deptCd: string;
@@ -297,7 +298,11 @@ export default function TabMenu({ initialData }: TabMenuProps) {
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-7xl mx-auto px-2">
         <h1 className="text-2xl sm:text-3xl font-bold text-center mb-8 text-black"><span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단</h1>
-        
+        <div className="text-gray-500 text-sm mb-4">
+          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/288008C178403F22E064B49691C6967B" target="_blank" className="text-blue-500 hover:underline">헌법과 법률을 유린한 국민의힘 정당 해산에 관한 청원</Link>
+          <br/>
+          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/27F6E510218D1216E064B49691C6967B" target="_blank" className="text-blue-500 hover:underline">대통령 윤석열 탄핵소추와 내란죄 수사를 위한 특검법 제정 촉구에 관한 청원</Link>
+        </div>
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center">
           <input
             type="text"
