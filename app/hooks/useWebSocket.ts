@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
+interface PetitionStatus {
+  status: number;
+  timestamp: string;
+}
 
+interface WebSocketData {
+  connectedusers: number;
+  yoon: PetitionStatus;
+  red: PetitionStatus;
+}
 export const useWebSocket = (url: string) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -36,5 +45,5 @@ export const useWebSocket = (url: string) => {
     }
   };
 
-  return { isConnected, data, sendMessage };
+  return { isConnected, data: data as WebSocketData | null , sendMessage };
 };

@@ -7,6 +7,16 @@ import Link from 'next/link';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { MemberCard } from './MemberCard';
 
+interface PetitionStatus {
+  status: number;
+  timestamp: string;
+}
+
+interface WebSocketData {
+  connectedusers: number;
+  yoon: PetitionStatus;
+  red: PetitionStatus;
+}
 interface AssemblyMember {
   deptCd: string;
   empNm: string;
@@ -338,9 +348,9 @@ export default function TabMenu({ initialData }: TabMenuProps) {
               📜 헌법과 법률을 유린한 국민의힘 정당 해산에 관한 청원
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              실시간 동의 <span className="font-bold text-red-500">{wsData?.red?.status?.toLocaleString() ?? '0'}</span>명
+              실시간 동의 <span className="font-bold text-red-500">{(wsData as WebSocketData)?.red?.status?.toLocaleString() ?? '0'}</span>명
               <span className="text-gray-500 ml-2">
-                ({new Date(wsData?.red?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
+                ({new Date((wsData as WebSocketData)?.red?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
               </span>
             </p>
           </div>
@@ -354,9 +364,9 @@ export default function TabMenu({ initialData }: TabMenuProps) {
               ⚖️ 대통령 윤석열 탄핵소추와 내란죄 수사를 위한 특검법 제정 촉구에 관한 청원
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              실시간 동의 <span className="font-bold text-red-500">{wsData?.yoon?.status?.toLocaleString() ?? '0'}</span>명
+              실시간 동의 <span className="font-bold text-red-500">{(wsData as WebSocketData)?.yoon?.status?.toLocaleString() ?? '0'}</span>명
               <span className="text-gray-500 ml-2">
-                ({new Date(wsData?.yoon?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
+                ({new Date((wsData as WebSocketData)?.yoon?.timestamp ?? Date.now()).toLocaleString('ko-KR')} 기준)
               </span>
             </p>
           </div>
