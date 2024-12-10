@@ -63,7 +63,7 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpe
 
   const Skeleton = () => (
     <div className="animate-pulse">
-      <div className="h-[300px] bg-gray-200 rounded-lg mb-4"></div>
+      <div className="w-[283px] h-[397px] mx-auto bg-gray-200 rounded-lg mb-4"></div>
       <div className="space-y-4">
         {[...Array(9)].map((_, i) => (
           <div key={i} className="border-b py-2">
@@ -84,15 +84,21 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading }: { isOpe
           <div className="flex flex-col gap-6">
             {member && (
               <div className="flex-shrink-0 w-full sm:w-auto flex justify-center">
-                <Image 
-                  src={`/assembly_high/${member.deptCd}.${member.imgType || 'jpg'}`}
-                  alt={member.empNm}
-                  width={283}
-                  height={397}
-                  className="rounded-lg object-cover"
-                  priority
-                  quality={100}
-                />
+                <div className="relative mx-auto w-[283px] h-[397px]">
+                  <div className="absolute inset-0 bg-gray-200 rounded-lg animate-pulse" />
+                  <Image 
+                    src={`/assembly_high/${member.deptCd}.${member.imgType || 'jpg'}`}
+                    alt={member.empNm}
+                    width={283}
+                    height={397}
+                    className="rounded-lg object-cover"
+                    priority
+                    quality={100}
+                    onLoadingComplete={(img) => {
+                      img.parentElement?.querySelector('.animate-pulse')?.classList.add('hidden');
+                    }}
+                  />
+                </div>
               </div>
             )}
             <div className="flex-grow">
