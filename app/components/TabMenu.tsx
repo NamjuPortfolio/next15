@@ -143,7 +143,11 @@ const DetailModal = ({ isOpen, onClose, detailInfo, member, isLoading, isDarkMod
                   '당선구:': detailInfo?.origNm || '-',
                   '이메일:': detailInfo?.assemEmail || '-',
                   '소속위원회:': detailInfo?.shrtNm || '-',
-                  '홈페이지:': detailInfo?.assemHomep || '-',
+                  '홈페이지:': detailInfo?.assemHomep ? (
+                    <Link href={detailInfo.assemHomep} target="_blank" className="text-blue-500 hover:underline">
+                      {detailInfo.assemHomep}
+                    </Link>
+                  ) : '-',
                   '전화번호:': detailInfo?.assemTel || '-',
                   '생년월일:': detailInfo?.bthDate ? `${detailInfo.bthDate.substring(2,4)}년${detailInfo.bthDate.substring(4,6)}월${detailInfo.bthDate.substring(6,8)}일${detailInfo.bthDate ? `(만 ${new Date().getFullYear() - parseInt(detailInfo.bthDate.substring(0,4))}세)` : ''}` : '-',
                   '정당:': detailInfo?.polyNm || '-',
