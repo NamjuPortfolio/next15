@@ -52,7 +52,7 @@ const MemberCard = ({ member, onDetailClick, isDarkMode }: { member: AssemblyMem
         <p className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>{member.reeleGbnNm}</p>
         <button 
           onClick={() => onDetailClick(member.deptCd)}
-          className="mt-2 px-4 py-2 bg-blue-500 w-24 mx-auto sm:mx-0 text-white rounded hover:bg-blue-600"
+          className="mt-2 px-4 py-2 bg-red-500 w-24 mx-auto sm:mx-0 text-white rounded hover:bg-red-600"
         >
           상세보기
         </button>
@@ -298,9 +298,9 @@ export default function TabMenu({ initialData }: TabMenuProps) {
           <span className="font-bold">절대 잊어서는 안 될 내란의 공범</span> 국민의 힘 의원 105명 명단
         </h1>
         <div className="text-gray-500 text-sm mb-4">
-          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/288008C178403F22E064B49691C6967B" target="_blank" className="text-blue-500 hover:underline">헌법과 법률을 유린한 국민의힘 정당 해산에 관한 ���원</Link>
+          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/288008C178403F22E064B49691C6967B" target="_blank" className="text-red-500 hover:underline">헌법과 법률을 유린한 국민의힘 정당 해산에 관한 청원</Link>
           <br/>
-          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/27F6E510218D1216E064B49691C6967B" target="_blank" className="text-blue-500 hover:underline">대통령 윤석열 탄핵소추와 내란죄 수사를 위한 특검법 제정 촉구에 관한 청원</Link>
+          <Link href="https://petitions.assembly.go.kr/proceed/onGoingAll/27F6E510218D1216E064B49691C6967B" target="_blank" className="text-red-500 hover:underline">대통령 윤석열 탄핵소추와 내란죄 수사를 위한 특검법 제정 촉구에 관한 청원</Link>
         </div>
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center">
           <input
@@ -308,24 +308,24 @@ export default function TabMenu({ initialData }: TabMenuProps) {
             placeholder="이름 또는 지역으로 검색"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-5/12 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-white"
+            className="w-full sm:w-5/12 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-700 dark:text-white"
           />
           <div className="flex flex-wrap gap-2 justify-center sm:justify-start w-full sm:w-auto">
             <button
               onClick={() => setSortBy('name')}
-              className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'name' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+              className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'name' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'}`}
             >
               이름순
             </button>
             <button
               onClick={() => setSortBy('term')}
-              className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'term' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+              className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'term' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'}`}
             >
               선수순
             </button>
             <button
               onClick={() => setSortBy('region')}
-              className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'region' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+              className={`px-3 py-1.5 text-sm sm:px-4 sm:py-2 rounded-lg ${sortBy === 'region' ? 'bg-red-500 text-white' : 'bg-white text-gray-700'}`}
             >
               지역순
             </button>
@@ -348,7 +348,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
                 className={({ selected }) =>
                   `rounded-lg py-1.5 sm:py-2.5 text-sm font-medium leading-5 px-3 sm:px-4 whitespace-nowrap min-w-[100px] text-center
                   ${selected
-                    ? 'bg-blue-500 text-white shadow'
+                    ? 'bg-red-500 text-white shadow'
                     : isDarkMode 
                       ? 'text-gray-300 hover:bg-gray-700' 
                       : 'text-gray-700 hover:bg-gray-100'
