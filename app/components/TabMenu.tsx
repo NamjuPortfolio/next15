@@ -41,7 +41,7 @@ interface TabMenuProps {
 
 const MemberCard = ({ member, onDetailClick }: { member: AssemblyMember; onDetailClick: (deptCd: string) => void }) => (
   <div className="p-4 border rounded-lg hover:shadow-lg transition-shadow bg-white">
-    <div className="flex flex-col sm:flex-row items-center gap-4">
+    <div className="flex flex-row items-center gap-4">
       <Image src={`/assembly/${member.deptCd}.${member.imgType || 'jpg'}`} alt={member.empNm} width={100} height={50} className="rounded-lg" style={{ width: '100px', height: 'auto' }}  />
       <div className="flex flex-col overflow-hidden w-full sm:w-auto text-center sm:text-left">
         <p className="font-medium text-3xl text-black">{member.empNm}</p>
