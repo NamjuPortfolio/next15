@@ -12,7 +12,7 @@ interface AssemblyMember {
   jpgLink: string;
   origNm: string;
   reeleGbnNm: string;
-  electionNum: string;
+  electionNum?: string;
   numKey: string;
   imgType?: string;
 }
