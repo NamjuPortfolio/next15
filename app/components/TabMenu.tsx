@@ -308,7 +308,7 @@ export default function TabMenu({ initialData }: TabMenuProps) {
             placeholder="이름 또는 지역으로 검색"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-5/12 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full sm:w-5/12 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 dark:text-white"
           />
           <div className="flex flex-wrap gap-2 justify-center sm:justify-start w-full sm:w-auto">
             <button
